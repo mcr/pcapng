@@ -5,17 +5,17 @@
 Network Working Group                                     M. Tuexen, Ed.
 Internet-Draft                          Muenster Univ. of Appl. Sciences
 Intended status: Informational                                  F. Risso
-Expires: February 26, 2016                         Politecnico di Torino
+Expires: March 6, 2016                             Politecnico di Torino
                                                              J. Bongertz
                                                  Airbus DS CyberSecurity
                                                                 G. Combs
                                                                Wireshark
                                                                G. Harris
-                                                         August 25, 2015
+                                                       September 3, 2015
 
 
-           PCAP Next Generation (PCAPNG) Capture File Format
-                     draft-tuexen-opsawg-pcapng-01a
+           PCAP Next Generation (pcapng) Capture File Format
+                       draft-tuexen-opsawg-pcapng
 
 Abstract
 
@@ -38,7 +38,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on February 26, 2016.
+   This Internet-Draft will expire on March 6, 2016.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Tuexen, et al.          Expires February 26, 2016               [Page 1]
+Tuexen, et al.            Expires March 6, 2016                 [Page 1]
 
-Internet-Draft                   PCAPNG                      August 2015
+Internet-Draft                   pcapng                   September 2015
 
 
    to this document.  Code Components extracted from this document must
@@ -66,59 +66,61 @@ Internet-Draft                   PCAPNG                      August 2015
 Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
-   2.  Conventions . . . . . . . . . . . . . . . . . . . . . . . . .   3
-   3.  General File Structure  . . . . . . . . . . . . . . . . . . .   3
-     3.1.  General Block Structure . . . . . . . . . . . . . . . . .   3
-     3.2.  Block Types . . . . . . . . . . . . . . . . . . . . . . .   4
+   2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   3
+     2.1.  Acronyms  . . . . . . . . . . . . . . . . . . . . . . . .   3
+   3.  General File Structure  . . . . . . . . . . . . . . . . . . .   4
+     3.1.  General Block Structure . . . . . . . . . . . . . . . . .   4
+     3.2.  Block Types . . . . . . . . . . . . . . . . . . . . . . .   5
      3.3.  Logical Block Hierarchy . . . . . . . . . . . . . . . . .   6
-     3.4.  Physical File Layout  . . . . . . . . . . . . . . . . . .   6
+     3.4.  Physical File Layout  . . . . . . . . . . . . . . . . . .   7
      3.5.  Options . . . . . . . . . . . . . . . . . . . . . . . . .   8
-     3.6.  Custom Options  . . . . . . . . . . . . . . . . . . . . .  10
-     3.7.  Data format . . . . . . . . . . . . . . . . . . . . . . .  11
-       3.7.1.  Endianess . . . . . . . . . . . . . . . . . . . . . .  11
-       3.7.2.  Alignment . . . . . . . . . . . . . . . . . . . . . .  11
-   4.  Block Definition  . . . . . . . . . . . . . . . . . . . . . .  12
-     4.1.  Section Header Block  . . . . . . . . . . . . . . . . . .  12
-     4.2.  Interface Description Block . . . . . . . . . . . . . . .  14
-     4.3.  Enhanced Packet Block . . . . . . . . . . . . . . . . . .  19
-     4.4.  Simple Packet Block . . . . . . . . . . . . . . . . . . .  22
-     4.5.  Name Resolution Block . . . . . . . . . . . . . . . . . .  24
-     4.6.  Interface Statistics Block  . . . . . . . . . . . . . . .  27
-     4.7.  Custom Block  . . . . . . . . . . . . . . . . . . . . . .  30
-   5.  Experimental Blocks (deserve further investigation) . . . . .  32
-     5.1.  Alternative Packet Blocks (experimental)  . . . . . . . .  32
-     5.2.  Compression Block (experimental)  . . . . . . . . . . . .  32
-     5.3.  Encryption Block (experimental) . . . . . . . . . . . . .  33
-     5.4.  Fixed Length Block (experimental) . . . . . . . . . . . .  34
-     5.5.  Directory Block (experimental)  . . . . . . . . . . . . .  35
-     5.6.  Traffic Statistics and Monitoring Blocks (experimental) .  35
-     5.7.  Event/Security Block (experimental) . . . . . . . . . . .  35
-   6.  Vendor-Specific Custom Extensions . . . . . . . . . . . . . .  35
-     6.1.  Supported Use-Cases . . . . . . . . . . . . . . . . . . .  36
-     6.2.  Controlling Copy Behavior . . . . . . . . . . . . . . . .  36
-     6.3.  Strings vs. Bytes . . . . . . . . . . . . . . . . . . . .  37
-     6.4.  Endianess Issues  . . . . . . . . . . . . . . . . . . . .  37
-   7.  Recommended File Name Extension: .pcapng  . . . . . . . . . .  37
-   8.  Conclusions . . . . . . . . . . . . . . . . . . . . . . . . .  38
-   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  38
-   10. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  38
-   11. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  38
-   12. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  38
-   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  38
-     13.1.  Normative References . . . . . . . . . . . . . . . . . .  39
+       3.5.1.  Custom Options  . . . . . . . . . . . . . . . . . . .  10
+     3.6.  Data format . . . . . . . . . . . . . . . . . . . . . . .  12
+       3.6.1.  Endianness  . . . . . . . . . . . . . . . . . . . . .  12
+       3.6.2.  Alignment . . . . . . . . . . . . . . . . . . . . . .  12
+   4.  Block Definition  . . . . . . . . . . . . . . . . . . . . . .  13
+     4.1.  Section Header Block  . . . . . . . . . . . . . . . . . .  13
+     4.2.  Interface Description Block . . . . . . . . . . . . . . .  15
+     4.3.  Enhanced Packet Block . . . . . . . . . . . . . . . . . .  20
+       4.3.1.  Enhanced Packet Block Flags Word  . . . . . . . . . .  23
+     4.4.  Simple Packet Block . . . . . . . . . . . . . . . . . . .  24
+     4.5.  Name Resolution Block . . . . . . . . . . . . . . . . . .  26
+     4.6.  Interface Statistics Block  . . . . . . . . . . . . . . .  30
+     4.7.  Custom Block  . . . . . . . . . . . . . . . . . . . . . .  32
+   5.  Experimental Blocks (deserve further investigation) . . . . .  34
+     5.1.  Alternative Packet Blocks (experimental)  . . . . . . . .  34
+     5.2.  Compression Block (experimental)  . . . . . . . . . . . .  34
+     5.3.  Encryption Block (experimental) . . . . . . . . . . . . .  35
+     5.4.  Fixed Length Block (experimental) . . . . . . . . . . . .  36
+     5.5.  Directory Block (experimental)  . . . . . . . . . . . . .  37
+     5.6.  Traffic Statistics and Monitoring Blocks (experimental) .  37
+     5.7.  Event/Security Block (experimental) . . . . . . . . . . .  37
+   6.  Vendor-Specific Custom Extensions . . . . . . . . . . . . . .  37
+     6.1.  Supported Use-Cases . . . . . . . . . . . . . . . . . . .  38
+     6.2.  Controlling Copy Behavior . . . . . . . . . . . . . . . .  38
+     6.3.  Strings vs. Bytes . . . . . . . . . . . . . . . . . . . .  39
+     6.4.  Endianness Issues . . . . . . . . . . . . . . . . . . . .  39
+   7.  Recommended File Name Extension: .pcapng  . . . . . . . . . .  39
+   8.  Conclusions . . . . . . . . . . . . . . . . . . . . . . . . .  40
+   9.  Implementations . . . . . . . . . . . . . . . . . . . . . . .  40
+   10. Security Considerations . . . . . . . . . . . . . . . . . . .  40
+   11. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  40
+     11.1.  Standardized Block Type Codes  . . . . . . . . . . . . .  40
 
 
 
-Tuexen, et al.          Expires February 26, 2016               [Page 2]
+Tuexen, et al.            Expires March 6, 2016                 [Page 2]
 
-Internet-Draft                   PCAPNG                      August 2015
+Internet-Draft                   pcapng                   September 2015
 
 
-     13.2.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  39
-   Appendix A.  Packet Block Flags Word  . . . . . . . . . . . . . .  39
-   Appendix B.  Standardized Block Type Codes  . . . . . . . . . . .  40
-   Appendix C.  Packet Block (obsolete!) . . . . . . . . . . . . . .  41
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  44
+   12. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  42
+   13. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  42
+   14. References  . . . . . . . . . . . . . . . . . . . . . . . . .  42
+     14.1.  Normative References . . . . . . . . . . . . . . . . . .  42
+     14.2.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  42
+   Appendix A.  Packet Block (obsolete!) . . . . . . . . . . . . . .  42
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  45
 
 1.  Introduction
 
@@ -145,11 +147,36 @@ Internet-Draft                   PCAPNG                      August 2015
    Merge/Append data:  It should be possible to add data at the end of a
       given file, and the resulting file must still be readable.
 
-2.  Conventions
+2.  Terminology
 
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
    document are to be interpreted as described in [RFC2119].
+
+2.1.  Acronyms
+
+   The following acronyms are used throughout this document:
+
+   SHB:  Section Header Block
+
+   IDB:  Interface Description Block
+
+   ISB:  Interface Statistics Block
+
+
+
+Tuexen, et al.            Expires March 6, 2016                 [Page 3]
+
+Internet-Draft                   pcapng                   September 2015
+
+
+   EPB:  Enhanced Packet Block
+
+   SPB:  Simple Packet Block
+
+   NRB:  Name Resolution Block
+
+   CB:  Custom Block
 
 3.  General File Structure
 
@@ -158,17 +185,6 @@ Internet-Draft                   PCAPNG                      August 2015
    A capture file is organized in blocks, that are appended one to
    another to form the file.  All the blocks share a common format,
    which is shown in Figure 1.
-
-
-
-
-
-
-
-Tuexen, et al.          Expires February 26, 2016               [Page 3]
-
-Internet-Draft                   PCAPNG                      August 2015
-
 
       0                   1                   2                   3
       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -191,15 +207,26 @@ Internet-Draft                   PCAPNG                      August 2015
       Values whose Most Significant Bit (MSB) is equal to 1 are reserved
       for local use.  They can be used to make extensions to the file
       format to save private data to the file.  The list of currently
-      defined types can be found in Appendix B.
+      defined types can be found in Section 11.1.
 
-   o  Block Total Length: total size of this block, in bytes.  For
+   o  Block Total Length: total size of this block, in octets.  For
       instance, the length of a block that does not have a body is 12
-      bytes.  This value MUST be a multiple of 4.
+      octets: 4 octets for the Block Type, 4 octets for the initial
+      Block Total Length and 4 octets for the trailing Block Total
+      Length.  This value MUST be a multiple of 4.
 
    o  Block Body: content of the block.
 
-   o  Block Total Length: total size of this block, in bytes.  This
+
+
+
+
+Tuexen, et al.            Expires March 6, 2016                 [Page 4]
+
+Internet-Draft                   pcapng                   September 2015
+
+
+   o  Block Total Length: total size of this block, in octets.  This
       field is duplicated to permit backward file navigation.
 
    This structure, shared among all blocks, makes it easy to process a
@@ -215,16 +242,10 @@ Internet-Draft                   PCAPNG                      August 2015
 3.2.  Block Types
 
    The currently standardized Block Type codes are specified in
-   Appendix B; they have been grouped in the following four categories:
+   Section 11.1; they have been grouped in the following four
+   categories:
 
    The following MANDATORY block MUST appear at least once in each file:
-
-
-
-Tuexen, et al.          Expires February 26, 2016               [Page 4]
-
-Internet-Draft                   PCAPNG                      August 2015
-
 
    o  Section Header Block (Section 4.1): it defines the most important
       characteristics of the capture file.
@@ -238,7 +259,7 @@ Internet-Draft                   PCAPNG                      August 2015
 
    o  Enhanced Packet Block (Section 4.3): it contains a single captured
       packet, or a portion of it.  It represents an evolution of the
-      original, now obsolete, Packet Block (Appendix C).  If this
+      original, now obsolete, Packet Block (Appendix A).  If this
       appears in a file, an Interface Description Block is also
       required, before this block.
 
@@ -253,6 +274,14 @@ Internet-Draft                   PCAPNG                      August 2015
 
    o  Interface Statistics Block (Section 4.6): it defines how to store
       some statistical data (e.g. packet dropped, etc) which can be
+
+
+
+Tuexen, et al.            Expires March 6, 2016                 [Page 5]
+
+Internet-Draft                   pcapng                   September 2015
+
+
       useful to understand the conditions in which the capture has been
       made.  If this appears in a file, an Interface Description Block
       is also required, before this block.
@@ -263,7 +292,7 @@ Internet-Draft                   PCAPNG                      August 2015
    The following OBSOLETE block SHOULD NOT appear in newly written files
    (but is documented in the Appendix for reference):
 
-   o  Packet Block (Appendix C): it contains a single captured packet,
+   o  Packet Block (Appendix A): it contains a single captured packet,
       or a portion of it.  It is OBSOLETE, and superseded by the
       Enhanced Packet Block (Section 4.3).
 
@@ -274,13 +303,6 @@ Internet-Draft                   PCAPNG                      August 2015
    o  Alternative Packet Blocks
 
    o  Compression Block
-
-
-
-Tuexen, et al.          Expires February 26, 2016               [Page 5]
-
-Internet-Draft                   PCAPNG                      August 2015
-
 
    o  Encryption Block
 
@@ -309,6 +331,13 @@ Internet-Draft                   PCAPNG                      August 2015
 
             Figure 2: Logical Block Hierarchy of a pcapng File
 
+
+
+Tuexen, et al.            Expires March 6, 2016                 [Page 6]
+
+Internet-Draft                   pcapng                   September 2015
+
+
    For example: each captured packet refers to a specific capture
    interface, the interface itself refers to a specific section.
 
@@ -325,18 +354,13 @@ Internet-Draft                   PCAPNG                      August 2015
    version number, it MUST skip everything until the next Section Header
    Block.  Note that, in order to properly skip the blocks until the
    next section, all blocks MUST have the fields Type and Length at the
-   beginning.  This is a mandatory requirement that MUST be maintained
-   in future versions of the block format.
+   beginning.  In order to preperly skip blocks in the backward
+   direction, all blocks MUST have the Length repeated at the end of the
+   block.  These are mandatory requirements that MUST be maintained in
+   future versions of the block format.
 
    Figure 3 shows a typical file layout, with a single Section Header
    that covers the whole file.
-
-
-
-Tuexen, et al.          Expires February 26, 2016               [Page 6]
-
-Internet-Draft                   PCAPNG                      August 2015
-
 
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    | SHB v1.0  |                      Data                         |
@@ -361,6 +385,15 @@ Internet-Draft                   PCAPNG                      August 2015
 
    Figure 5 shows a file comparable to a "classic libpcap" file - the
    minimum for a useful capture file.  It contains a single
+
+
+
+
+Tuexen, et al.            Expires March 6, 2016                 [Page 7]
+
+Internet-Draft                   pcapng                   September 2015
+
+
    Section Header Block (SHB), a single Interface Description Block
    (IDB) and a few Enhanced Packet Blocks (EPB).
 
@@ -387,13 +420,6 @@ Internet-Draft                   PCAPNG                      August 2015
    makes the file format very flexible compared to the classical libpcap
    format.
 
-
-
-Tuexen, et al.          Expires February 26, 2016               [Page 7]
-
-Internet-Draft                   PCAPNG                      August 2015
-
-
 3.5.  Options
 
    All the block bodies have the possibility to embed optional fields.
@@ -411,27 +437,35 @@ Internet-Draft                   PCAPNG                      August 2015
    Options are a list of Type - Length - Value fields, each one
    containing a single value:
 
-   o  Option Type (2 bytes): it contains the code that specifies the
+   o  Option Type (2 octets): it contains the code that specifies the
       type of the current TLV record.  Option types whose Most
       Significant Bit is equal to one are reserved for local use;
       therefore, there is no guarantee that the code used is unique
       among all capture files (generated by other applications), and is
+
+
+
+Tuexen, et al.            Expires March 6, 2016                 [Page 8]
+
+Internet-Draft                   pcapng                   September 2015
+
+
       most certainly not portable.  For cross-platform gloablly unique
       vendor-specific extensions, the Custom Option MUST be used
-      instead, as defined in Section 3.6).
+      instead, as defined in Section 3.5.1).
 
-   o  Option Length (2 bytes): it contains the actual length of the
-      following 'Option Value' field without the padding bytes.
+   o  Option Length (2 octets): it contains the actual length of the
+      following 'Option Value' field without the padding octets.
 
    o  Option Value (variable length): it contains the value of the given
       option, padded to a 32-bit boundary.  The actual length of this
-      field (i.e. without the padding bytes) is specified by the Option
+      field (i.e. without the padding octets) is specified by the Option
       Length field.
 
    If an option's value is a string, the value is not necessarily zero-
    terminated.  Software that reads these files MUST NOT assume that
-   strings are zero-terminated, and MUST treat a zero byte as a string
-   terminator.
+   strings are zero-terminated, and MUST treat a zero-value octet as a
+   string terminator.
 
    Options may be repeated several times (e.g. an interface that has
    several IP addresses associated to it) TODO: mention for each option,
@@ -440,15 +474,6 @@ Internet-Draft                   PCAPNG                      August 2015
    (opt_endofopt).
 
    The format of the optional fields is shown in Figure 7.
-
-
-
-
-
-Tuexen, et al.          Expires February 26, 2016               [Page 8]
-
-Internet-Draft                   PCAPNG                      August 2015
-
 
       0                   1                   2                   3
       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -468,6 +493,18 @@ Internet-Draft                   PCAPNG                      August 2015
                          Figure 7: Options Format
 
    The following codes can always be present in any optional field:
+
+
+
+
+
+
+
+
+Tuexen, et al.            Expires March 6, 2016                 [Page 9]
+
+Internet-Draft                   pcapng                   September 2015
+
 
             +--------------+-----------------------+----------+
             | Name         | Code                  | Length   |
@@ -498,25 +535,32 @@ Internet-Draft                   PCAPNG                      August 2015
            1486.\nIt will be fixed in the future.".
 
    opt_custom:
+           This option is described in detail in Section 3.5.1.
 
-
-
-Tuexen, et al.          Expires February 26, 2016               [Page 9]
-
-Internet-Draft                   PCAPNG                      August 2015
-
-
-           This option is described in detail in Section 3.6.
-
-3.6.  Custom Options
+3.5.1.  Custom Options
 
    Customs Options are used for portable, vendor-specific data related
-   to the block they're in.  A Custom Option can be in any block type,
-   can be repeated any number of times in a block, and may come before
-   or after other option types - except the opt_endofopt which is always
-   the last option.  Different Custom Options, of different type codes
-   and/or different Private Enterprise Numbers, may be used in the same
-   pcapng file.  See Section 6 for additional details.
+   to the block they're in.  A Custom Option can be in any block type
+   that can have options, can be repeated any number of times in a
+   block, and may come before or after other option types - except the
+   opt_endofopt which is always the last option.  Different Custom
+   Options, of different type codes and/or different Private Enterprise
+   Numbers, may be used in the same pcapng file.  See Section 6 for
+   additional details.
+
+
+
+
+
+
+
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 10]
+
+Internet-Draft                   pcapng                   September 2015
+
 
       0                   1                   2                   3
       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -546,7 +590,7 @@ Internet-Draft                   PCAPNG                      August 2015
 
       2989:
               This option code identifies a Custom Option containing
-              binary bytes in the Custom Data portion.  This Custom
+              binary octets in the Custom Data portion.  This Custom
               Option can be safely copied to a new file if the pcapng
               file is manipulated by an application; otherwise 19372
               should be used instead.  See Section 6.2 for details.
@@ -554,72 +598,65 @@ Internet-Draft                   PCAPNG                      August 2015
       19372:
               This option code identifies a Custom Option containing a
               UTF-8 string in the Custom Data portion, without NULL
-
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 10]
-
-Internet-Draft                   PCAPNG                      August 2015
-
-
               termination.  This Custom Option should not be copied to a
               new file if the pcapng file is manipulated by an
               application.  See Section 6.2 for details.
 
       19373:
               This option code identifies a Custom Option containing
-              binary bytes in the Custom Data portion.  This Custom
+              binary octets in the Custom Data portion.  This Custom
               Option should not be copied to a new file if the pcapng
               file is manipulated by an application.  See Section 6.2
               for details.
 
+
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 11]
+
+Internet-Draft                   pcapng                   September 2015
+
+
    o  Option Length: as described in Section 3.1, this contains the
-      length of the option's value, which includes the 4-byte Private
+      length of the option's value, which includes the 4-octet Private
       Enterprise Number and variable-length Custom Data fields, without
-      the padding bytes.
+      the padding octets.
 
    o  Private Enterprise Number: An IANA-assigned Private Enterprise
       Number identifying the organization which defined the Custom
       Option.  See Section 6.1 for details.  The PEN number MUST be
-      encoded using the same endianess as the Section Header Block it is
-      within the scope of.
+      encoded using the same endianness as the Section Header Block it
+      is within the scope of.
 
    o  Custom Data: the custom data, padded to a 32 bit boundary.
 
-3.7.  Data format
+3.6.  Data format
 
-3.7.1.  Endianess
+3.6.1.  Endianness
 
    Data contained in each section will always be saved according to the
    characteristics (little endian / big endian) of the capturing
    machine.  This refers to all the fields that are saved as numbers and
-   that span over two or more bytes.
+   that span over two or more octets.
 
    The approach of having each section saved in the native format of the
    generating host is more efficient because it avoids translation of
    data when reading / writing on the host itself, which is the most
    common case when generating/processing capture captures.
 
-   Please note: The endianess is indicated by the Section Header Block
-   (Section 4.1).  As this block can appear several times in a pcapng
-   file, a single file can contain both endianess variants!
+   Please note: The endianness is indicated by the Section Header Block
+   (Section 4.1).  Since this block can appear several times in a pcapng
+   file, a single file can contain both endianness variants.
 
-3.7.2.  Alignment
+3.6.2.  Alignment
 
    All fields of this specification uses proper alignment for 16- and
    32-bit values.  This makes it easier and faster to read/write file
    contents if using techniques like memory mapped files.
 
-
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 11]
-
-Internet-Draft                   PCAPNG                      August 2015
-
-
-   The alignment bytes (marked in this document e.g. with "padded to 32
-   bits") MUST be filled with zero bytes.
+   The alignment octets (marked in this document e.g. with "padded to 32
+   bits") MUST be filled with zeroes.
 
    Please note: 64-bit values are not aligned to 64-bit boundaries.
    This is because the file is naturally aligned to 32-bit boundaries
@@ -627,7 +664,15 @@ Internet-Draft                   PCAPNG                      August 2015
    values.  TODO: the spec is not too consistent wrt how 64-bit values
    are saved.  In the Packet blocks we clearly specify where the low and
    high 32-bits of a 64-bit timestamp should be saved.  In the SHB we do
-   use the endianess of the machine when we save the section length.
+   use the endianness of the machine when we save the section length.
+
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 12]
+
+Internet-Draft                   pcapng                   September 2015
+
 
 4.  Block Definition
 
@@ -635,11 +680,11 @@ Internet-Draft                   PCAPNG                      August 2015
 
 4.1.  Section Header Block
 
-   The Section Header Block is mandatory.  It identifies the beginning
-   of a section of the capture capture file.  The Section Header Block
-   does not contain data but it rather identifies a list of blocks
-   (interfaces, packets) that are logically correlated.  Its format is
-   shown in Figure 9.
+   The Section Header Block (SHB) is mandatory.  It identifies the
+   beginning of a section of the capture capture file.  The
+   Section Header Block does not contain data but it rather identifies a
+   list of blocks (interfaces, packets) that are logically correlated.
+   Its format is shown in Figure 9.
 
       0                   1                   2                   3
       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -667,13 +712,6 @@ Internet-Draft                   PCAPNG                      August 2015
 
    The meaning of the fields is:
 
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 12]
-
-Internet-Draft                   PCAPNG                      August 2015
-
-
    o  Block Type: The block type of the Section Header Block is the
       integer corresponding to the 4-char string "\r\n\n\r"
       (0x0A0D0D0A).  This particular value is used for 2 reasons:
@@ -684,11 +722,19 @@ Internet-Draft                   PCAPNG                      August 2015
           this field will differ from the standard one ("\r\n\n\r") and
           the reader can detect a possibly corrupted file.
 
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 13]
+
+Internet-Draft                   pcapng                   September 2015
+
+
       2.  This value is palindromic, so that the reader is able to
-          recognize the Section Header Block regardless of the endianess
-          of the section.  The endianess is recognized by reading the
-          Byte Order Magic, that is located 8 bytes after the Block
-          Type.
+          recognize the Section Header Block regardless of the
+          endianness of the section.  The endianness is recognized by
+          reading the Byte Order Magic, that is located 8 octets after
+          the Block Type.
 
    o  Block Total Length: total size of this block, as described in
       Section 3.1.
@@ -710,34 +756,35 @@ Internet-Draft                   PCAPNG                      August 2015
       still automatically read the new format but code that can only
       read the old format cannot read the new format.
 
-   o  Section Length: 64-bit value specifying the length in bytes of the
-      following section, excluding the Section Header Block itself.
-      This field can be used to skip the section, for faster navigation
-      inside large files.  Section Length equal -1 (0xFFFFFFFFFFFFFFFF)
-      means that the size of the section is not specified, and the only
-      way to skip the section is to parse the blocks that it contains.
-      Please note that if this field is valid (i.e. not -1), its value
-      is always aligned to 32 bits, as all the blocks are aligned to and
-      padded to 32-bit boundaries.  Also, special care should be taken
-      in accessing this field: since the alignment of all the blocks in
-      the file is 32-bit, this field is not guaranteed to be aligned to
-      a 64-bit boundary.  This could be a problem on 64-bit processors.
-
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 13]
-
-Internet-Draft                   PCAPNG                      August 2015
-
+   o  Section Length: a signed 64-bit value specifying the length in
+      octets of the following section, excluding the Section Header
+      Block itself.  This field can be used to skip the section, for
+      faster navigation inside large files.  Section Length equal -1
+      (0xFFFFFFFFFFFFFFFF) means that the size of the section is not
+      specified, and the only way to skip the section is to parse the
+      blocks that it contains.  Please note that if this field is valid
+      (i.e. not negative), its value is always aligned to 32 bits, as
+      all the blocks are aligned to and padded to 32-bit boundaries.
+      Also, special care should be taken in accessing this field: since
+      the alignment of all the blocks in the file is 32-bits, this field
+      is not guaranteed to be aligned to a 64-bit boundary.  This could
+      be a problem on 64-bit processors.
 
    o  Options: optionally, a list of options (formatted according to the
       rules defined in Section 3.5) can be present.
 
    Adding new block types or options would not necessarily require that
    either Major or Minor numbers be changed, as code that does not know
-   about the block type or option could just skip it; only if skipping a
-   block or option does not work should the minor version number be
+   about the block type or option should just skip it; only if skipping
+   a block or option does not work should the minor version number be
    changed.
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 14]
+
+Internet-Draft                   pcapng                   September 2015
+
 
    Aside from the options defined in Section 3.5, the following options
    are valid within this block:
@@ -775,16 +822,8 @@ Internet-Draft                   PCAPNG                      August 2015
 
 4.2.  Interface Description Block
 
-   An Interface Description Block is the container for information
+   An Interface Description Block (IDB) is the container for information
    describing an interface on which packet data is captured.
-
-
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 14]
-
-Internet-Draft                   PCAPNG                      August 2015
-
 
    Tools that write / read the capture file associate a progressive
    32-bit number (starting from '0') to each Interface Definition Block,
@@ -795,13 +834,21 @@ Internet-Draft                   PCAPNG                      August 2015
    Interface ID values.  This unique identifier is referenced by other
    blocks, such as Enhanced Packet Blocks and Interface Statistic
    Blocks, to indicate the interface to which the block refers (such the
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 15]
+
+Internet-Draft                   pcapng                   September 2015
+
+
    interface that was used to capture the packet that an Enhanced Packet
    Block contains or to which the statistics in an Interface Statistic
    Block refer).
 
-   There must be an Interface Description Block (IDB) for each interface
-   to which another block refers.  Blocks such as an Enhanced Packet
-   Block or an Interface Statistics Block contain an Interface ID value
+   There must be an Interface Description Block for each interface to
+   which another block refers.  Blocks such as an Enhanced Packet Block
+   or an Interface Statistics Block contain an Interface ID value
    referring to a particular interface, and a Simple Packet Block
    implicitly refers to an interface with an Interface ID of 0.  If the
    file does not contain any blocks that use an Interface ID, then the
@@ -833,15 +880,6 @@ Internet-Draft                   PCAPNG                      August 2015
 
    The meaning of the fields is:
 
-
-
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 15]
-
-Internet-Draft                   PCAPNG                      August 2015
-
-
    o  Block Type: The block type of the Interface Description Block is
       1.
 
@@ -852,7 +890,18 @@ Internet-Draft                   PCAPNG                      August 2015
       interface.  The list of Standardized Link Layer Type codes is
       available in the tcpdump.org link-layer header types registry [1].
 
-   o  SnapLen: maximum number of bytes captured from each packet.  The
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 16]
+
+Internet-Draft                   pcapng                   September 2015
+
+
+   o  Reserved: not used - MUST be filled with 0, and ignored by pcapng
+      file readers.
+
+   o  SnapLen: maximum number of octets captured from each packet.  The
       portion of each packet that exceeds this value will not be stored
       in the file.  A value of zero indicates no limit.
 
@@ -890,36 +939,41 @@ Internet-Draft                   PCAPNG                      August 2015
            "\Device\NPF_{AD1CE675-96D0-47C5-ADD0-2504B9126B68}".
 
    if_description:
-
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 16]
-
-Internet-Draft                   PCAPNG                      August 2015
-
-
            The if_description option is a UTF-8 string containing the
            description of the device used to capture data.
 
            Examples: "Broadcom NetXtreme", "First Ethernet Interface".
 
    if_IPv4addr:
-           The if_IPv4addr option is the IPv4 network address and
+
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 17]
+
+Internet-Draft                   pcapng                   September 2015
+
+
+           The if_IPv4addr option is an IPv4 network address and
+           corresponding netmask for the interface.  The first four
+           octets are the IP address, and the next four octets are the
            netmask.  This option can be repeated multiple times within
            the same Interface Description Block when multiple IPv4
-           addresses are assigned to the interface.
+           addresses are assigned to the interface.  Note that the IP
+           address and netmask are both treated as four octets, one for
+           each octet of the address or mask; they are not 32-bit
+           numbers, and thus the endianness of the SHB does not affect
+           this field's value.
 
            Examples: '192 168 1 1 255 255 255 0'.
 
-           [Open issue: does this mean it's encoded in network order
-           always?]
-
    if_IPv6addr:
-           The if_IPv6addr option is the IPv6 network address and prefix
-           length (stored in the last byte).  This option can be
-           repeated multiple times within the same Interface Description
-           Block when multiple IPv6 addresses are assigned to the
-           interface.
+           The if_IPv6addr option is an IPv6 network address and
+           corresponding prefix length for the interface.  The first 16
+           octets are the IP address and the next octet is the prefix
+           length.  This option can be repeated multiple times within
+           the same Interface Description Block when multiple IPv6
+           addresses are assigned to the interface.
 
            Example: 2001:0db8:85a3:08d3:1319:8a2e:0370:7344/64 is
            written (in hex) as '20 01 0d b8 85 a3 08 d3 13 19 8a 2e 03
@@ -927,7 +981,7 @@ Internet-Draft                   PCAPNG                      August 2015
 
    if_MACaddr:
            The if_MACaddr option is the Interface Hardware MAC address
-           (48 bits).
+           (48 bits), if available.
 
            Example: '00 01 02 03 04 05'.
 
@@ -946,16 +1000,16 @@ Internet-Draft                   PCAPNG                      August 2015
    if_tsresol:
            The if_tsresol option identifies the resolution of
            timestamps.  If the Most Significant Bit is equal to zero,
-
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 17]
-
-Internet-Draft                   PCAPNG                      August 2015
-
-
            the remaining bits indicates the resolution of the timestamp
            as a negative power of 10 (e.g. 6 means microsecond
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 18]
+
+Internet-Draft                   pcapng                   September 2015
+
+
            resolution, timestamps are the number of microseconds since
            1/1/1970).  If the Most Significant Bit is equal to one, the
            remaining bits indicates the resolution as as negative power
@@ -974,7 +1028,7 @@ Internet-Draft                   PCAPNG                      August 2015
 
    if_filter:
            The if_filter option is identifies the filter (e.g. "capture
-           only TCP traffic") used to capture traffic.  The first byte
+           only TCP traffic") used to capture traffic.  The first octet
            of the Option Data keeps a code of the filter used (e.g. if
            this is a libpcap string, or BPF bytecode, and more).  More
            details about this format will be presented in Appendix XXX
@@ -997,20 +1051,21 @@ Internet-Draft                   PCAPNG                      August 2015
            The if_fcslen option is an 8-bit unsigned integer value that
            specifies the length of the Frame Check Sequence (in bits)
            for this interface.  For link layers whose FCS length can
-           change during time, the Packet Block Flags Word can be used
-           (see Appendix A).
+           change during time, the Enhanced Packet Block epb_flags
+           Option can be used in each Enhanced Packet Block (see
+           Section 4.3.1).
 
            Example: '4'.
 
-
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 18]
-
-Internet-Draft                   PCAPNG                      August 2015
-
-
    if_tsoffset:
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 19]
+
+Internet-Draft                   pcapng                   September 2015
+
+
            The if_tsoffset option is a 64-bit integer value that
            specifies an offset (in seconds) that must be added to the
            timestamp of each packet to obtain the absolute timestamp of
@@ -1024,24 +1079,24 @@ Internet-Draft                   PCAPNG                      August 2015
 
 4.3.  Enhanced Packet Block
 
-   An Enhanced Packet Block is the standard container for storing the
-   packets coming from the network.  The Enhanced Packet Block is
+   An Enhanced Packet Block (EPB) is the standard container for storing
+   the packets coming from the network.  The Enhanced Packet Block is
    optional because packets can be stored either by means of this block
    or the Simple Packet Block, which can be used to speed up capture
    file generation; or a file may have no packets in it.  The format of
    an Enhanced Packet Block is shown in Figure 11.
 
    The Enhanced Packet Block is an improvement over the original, now
-   obsolete, Packet Block (Appendix C):
+   obsolete, Packet Block (Appendix A):
 
    o  it stores the Interface Identifier as a 32-bit integer value.
       This is a requirement when a capture stores packets coming from a
       large number of interfaces
 
-   o  differently from the Packet Block (Appendix C), the number of
-      packets dropped by the capture system between this packet and the
-      previous one is not stored in the header, but rather in an option
-      of the block itself.
+   o  unlike the Packet Block (Appendix A), the number of packets
+      dropped by the capture system between this packet and the previous
+      one is not stored in the header, but rather in an option of the
+      block itself.
 
 
 
@@ -1061,9 +1116,10 @@ Internet-Draft                   PCAPNG                      August 2015
 
 
 
-Tuexen, et al.          Expires February 26, 2016              [Page 19]
+
+Tuexen, et al.            Expires March 6, 2016                [Page 20]
 
-Internet-Draft                   PCAPNG                      August 2015
+Internet-Draft                   pcapng                   September 2015
 
 
       0                   1                   2                   3
@@ -1079,9 +1135,9 @@ Internet-Draft                   PCAPNG                      August 2015
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    16 |                        Timestamp (Low)                        |
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   20 |                         Captured Len                          |
+   20 |                    Captured Packet Length                     |
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   24 |                          Packet Len                           |
+   24 |                    Original Packet Length                     |
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    28 /                                                               /
       /                          Packet Data                          /
@@ -1117,9 +1173,9 @@ Internet-Draft                   PCAPNG                      August 2015
 
 
 
-Tuexen, et al.          Expires February 26, 2016              [Page 20]
+Tuexen, et al.            Expires March 6, 2016                [Page 21]
 
-Internet-Draft                   PCAPNG                      August 2015
+Internet-Draft                   pcapng                   September 2015
 
 
       since 1/1/1970 00:00:00 UTC.  The way to interpret this field is
@@ -1130,23 +1186,26 @@ Internet-Draft                   PCAPNG                      August 2015
       microseconds since 1/1/1970.  They are saved as a single 64-bit
       quantity saved as two 32-bit words.
 
-   o  Captured Len: number of bytes captured from the packet (i.e.  the
-      length of the Packet Data field).  It will be the minimum value
-      among the actual Packet Length and the snapshot length (defined in
-      Figure 10).  The value of this field does not include the padding
-      bytes added at the end of the Packet Data field to align the
-      Packet Data Field to a 32-bit boundary.
+   o  Captured Packet Length: number of octets captured from the packet
+      (i.e. the length of the Packet Data field).  It will be the
+      minimum value among the Original Packet Length and the snapshot
+      length for the interface (SnapLen, defined in Figure 10).  The
+      value of this field does not include the padding octets added at
+      the end of the Packet Data field to align the Packet Data field to
+      a 32-bit boundary.
 
-   o  Packet Len: actual length of the packet when it was transmitted on
-      the network.  It can be different from Captured Len if the user
-      wants only a snapshot of the packet.
+   o  Original Packet Length: actual length of the packet when it was
+      transmitted on the network.  It can be different from Captured
+      Packet Length if the packet has been truncated by the capture
+      process.
 
    o  Packet Data: the data coming from the network, including link-
-      layer headers.  The actual length of this field is Captured Len.
-      The format of the link-layer headers depends on the LinkType field
-      specified in the Interface Description Block (see Section 4.2) and
-      it is specified in the entry for that format in the the
-      tcpdump.org link-layer header types registry [2].
+      layer headers.  The actual length of this field is Captured Packet
+      Length plus the padding to a 32-bit boundary.  The format of the
+      link-layer headers depends on the LinkType field specified in the
+      Interface Description Block (see Section 4.2) and it is specified
+      in the entry for that format in the the tcpdump.org link-layer
+      header types registry [2].
 
    o  Options: optionally, a list of options (formatted according to the
       rules defined in Section 3.5) can be present.
@@ -1165,35 +1224,37 @@ Internet-Draft                   PCAPNG                      August 2015
                   Table 4: Enhanced Packet Block Options
 
    epb_flags:
-           The epb_flags option is a flags word containing link-layer
-           information.  A complete specification of the allowed flags
-           can be found in Appendix A.
+
+
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 22]
+
+Internet-Draft                   pcapng                   September 2015
+
+
+           The epb_flags option is a 32-bit flags word containing link-
+           layer information.  A complete specification of the allowed
+           flags can be found in Section 4.3.1.
 
            Example: '0'.
 
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 21]
-
-Internet-Draft                   PCAPNG                      August 2015
-
-
    epb_hash:
            The epb_hash option contains a hash of the packet.  The first
-           byte specifies the hashing algorithm, while the following
-           bytes contain the actual hash, whose size depends on the
+           octet specifies the hashing algorithm, while the following
+           octets contain the actual hash, whose size depends on the
            hashing algorithm, and hence from the value in the first
-           byte.  The hashing algorithm can be: 2s complement (algorithm
-           byte = 0, size=XXX), XOR (algorithm byte = 1, size=XXX),
-           CRC32 (algorithm byte = 2, size = 4), MD-5 (algorithm byte =
-           3, size=XXX), SHA-1 (algorithm byte = 4, size=XXX).  The hash
-           covers only the packet, not the header added by the capture
-           driver: this gives the possibility to calculate it inside the
-           network card.  The hash allows easier comparison/merging of
-           different capture files, and reliable data transfer between
-           the data acquisition system and the capture library.  (TODO:
-           the text above uses "first bit", but shouldn't this be "first
-           byte"?!?)
+           octet.  The hashing algorithm can be: 2s complement
+           (algorithm octet = 0, size=XXX), XOR (algorithm octet = 1,
+           size=XXX), CRC32 (algorithm octet = 2, size = 4), MD-5
+           (algorithm octet = 3, size=XXX), SHA-1 (algorithm octet = 4,
+           size=XXX).  The hash covers only the packet, not the header
+           added by the capture driver: this gives the possibility to
+           calculate it inside the network card.  The hash allows easier
+           comparison/merging of different capture files, and reliable
+           data transfer between the data acquisition system and the
+           capture library.
 
            Examples: '02 EC 1D 87 97', '03 45 6E C2 17 7C 10 1E 3C 2E 99
            6E C2 9A 3D 50 8E'.
@@ -1205,10 +1266,56 @@ Internet-Draft                   PCAPNG                      August 2015
 
            Example: '0'.
 
+4.3.1.  Enhanced Packet Block Flags Word
+
+   The Enhanced Packet Block Flags Word is a 32-bit value that contains
+   link-layer information about the packet.
+
+   The word is encoded as an unsigned 32-bit integer, using the
+   endianness of the Section Header Block scope it is in.  In the
+   following table, the bits are numbered with 0 being the most-
+   significant bit and 31 being the least-significant bit of the 32-bit
+   unsigned integer.  The meaning of the bits is the following:
+
+
+
+
+
+
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 23]
+
+Internet-Draft                   pcapng                   September 2015
+
+
+   +--------+----------------------------------------------------------+
+   | Bit    | Description                                              |
+   | Number |                                                          |
+   +--------+----------------------------------------------------------+
+   | 0-1    | Inbound / Outbound packet (00 = information not          |
+   |        | available, 01 = inbound, 10 = outbound)                  |
+   | 2-4    | Reception type (000 = not specified, 001 = unicast, 010  |
+   |        | = multicast, 011 = broadcast, 100 = promiscuous).        |
+   | 5-8    | FCS length, in octets (0000 if this information is not   |
+   |        | available).  This value overrides the if_fcslen option   |
+   |        | of the Interface Description Block, and is used with     |
+   |        | those link layers (e.g. PPP) where the length of the FCS |
+   |        | can change during time.                                  |
+   | 9-15   | Reserved (MUST be set to zero).                          |
+   | 16-31  | link-layer-dependent errors (Bit 31 = symbol error, Bit  |
+   |        | 30 = preamble error, Bit 29 = Start Frame Delimiter      |
+   |        | error, Bit 28 = unaligned frame error, Bit 27 = wrong    |
+   |        | Inter Frame Gap error, Bit 26 = packet too short error,  |
+   |        | Bit 25 = packet too long error, Bit 24 = CRC error,      |
+   |        | other?? are 16 bit enough?).                             |
+   +--------+----------------------------------------------------------+
+
 4.4.  Simple Packet Block
 
-   The Simple Packet Block is a lightweight container for storing the
-   packets coming from the network.  Its presence is optional.
+   The Simple Packet Block (SPB) is a lightweight container for storing
+   the packets coming from the network.  Its presence is optional.
 
    A Simple Packet Block is similar to an Enhanced Packet Block (see
    Section 4.3), but it is smaller, simpler to process and contains only
@@ -1229,9 +1336,14 @@ Internet-Draft                   PCAPNG                      August 2015
 
 
 
-Tuexen, et al.          Expires February 26, 2016              [Page 22]
+
+
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 24]
 
-Internet-Draft                   PCAPNG                      August 2015
+Internet-Draft                   pcapng                   September 2015
 
 
        0                   1                   2                   3
@@ -1241,7 +1353,7 @@ Internet-Draft                   PCAPNG                      August 2015
       +---------------------------------------------------------------+
     4 |                      Block Total Length                       |
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    8 |                          Packet Len                           |
+    8 |                    Original Packet Length                     |
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    12 /                                                               /
       /                          Packet Data                          /
@@ -1260,22 +1372,36 @@ Internet-Draft                   PCAPNG                      August 2015
    o  Block Total Length: total size of this block, as described in
       Section 3.1.
 
-   o  Packet Len: actual length of the packet when it was transmitted on
-      the network.  Can be different from captured len if the packet has
-      been truncated by the capture process.
+   o  Original Packet Length: actual length of the packet when it was
+      transmitted on the network.  It can be different from length of
+      the Packet Data field's length if the packet has been truncated by
+      the capture process, in which case the SnapLen value in
+      Section 4.2 will be less than this Original Packet Length value,
+      and the SnapLen value MUST be used to determine the size of the
+      Packet Data field length.
 
    o  Packet Data: the data coming from the network, including link-
       layer headers.  The length of this field can be derived from the
       field Block Total Length, present in the Block Header, and it is
       the minimum value among the SnapLen (present in the Interface
-      Description Block) and the Packet Len (present in this header).
-      The format of the link-layer headers depends on the LinkType field
-      specified in the Interface Description Block (see Section 4.2) and
-      it is specified in the entry for that format in the the
-      tcpdump.org link-layer header types registry [3].
+      Description Block) and the Original Packet Length (present in this
+      header).  The format of the data within this Packet Data field
+      depends on the LinkType field specified in the Interface
+      Description Block (see Section 4.2) and it is specified in the
+      entry for that format in the tcpdump.org link-layer header types
+      registry [3].
 
    The Simple Packet Block does not contain the timestamp because this
    is often one of the most costly operations on PCs.  Additionally,
+
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 25]
+
+Internet-Draft                   pcapng                   September 2015
+
+
    there are applications that do not require it; e.g. an Intrusion
    Detection System is interested in packets, not in their timestamp.
 
@@ -1283,34 +1409,35 @@ Internet-Draft                   PCAPNG                      August 2015
    than one interface because of the impossibility to refer to the
    correct one (it does not contain any Interface ID field).
 
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 23]
-
-Internet-Draft                   PCAPNG                      August 2015
-
-
    The Simple Packet Block is very efficient in term of disk space: a
-   snapshot whose length is 100 bytes requires only 16 bytes of
+   snapshot whose length is 100 octets requires only 16 octets of
    overhead, which corresponds to an efficiency of more than 86%.
 
 4.5.  Name Resolution Block
 
-   The Name Resolution Block is used to support the correlation of
+   The Name Resolution Block (NRB) is used to support the correlation of
    numeric addresses (present in the captured packets) and their
    corresponding canonical names and it is optional.  Having the literal
-   names saved in the file, this prevents the need of a name resolution
-   in a delayed time, when the association between names and addresses
-   can be different from the one in use at capture time.  Moreover, the
-   Name Resolution Block avoids the need of issuing a lot of DNS
-   requests every time the trace capture is opened, and allows to have
-   name resolution also when reading the capture with a machine not
-   connected to the network.
+   names saved in the file prevents the need for performing name
+   resolution at a later time, when the association between names and
+   addresses may be different from the one in use at capture time.
+   Moreover, the NRB avoids the need for issuing a lot of DNS requests
+   every time the trace capture is opened, and also provides name
+   resolution when reading the capture with a machine not connected to
+   the network.
 
-   A Name Resolution Block is normally placed at the beginning of the
-   file, but no assumptions can be taken about its position.  Name
-   Resolution Blocks can be added in a second time by tools that process
-   the file, like network analyzers.
+   A Name Resolution Block is often placed at the beginning of the file,
+   but no assumptions can be taken about its position.  Multiple NRBs
+   can exist in a pcapng file, either due to memory constraints or
+   because additional name resolutions were performed by file processing
+   tools, like network analyzers.
+
+   A Name Resolution Block need not contain any Records, except the
+   nrb_record_end Record which MUST be the last Record.  The addresses
+   and names in NRB Records MAY be repeated multiple times; i.e., the
+   same IP address may resolve to multiple names, the same name may
+   resolve to the multiple IP addresses, and even the same address-to-
+   name pair may appear multiple times, in the same NRB or across NRBs.
 
    The format of the Name Resolution Block is shown in Figure 13.
 
@@ -1326,24 +1453,9 @@ Internet-Draft                   PCAPNG                      August 2015
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 24]
+Tuexen, et al.            Expires March 6, 2016                [Page 26]
 
-Internet-Draft                   PCAPNG                      August 2015
+Internet-Draft                   pcapng                   September 2015
 
 
        0                   1                   2                   3
@@ -1362,7 +1474,7 @@ Internet-Draft                   PCAPNG                      August 2015
       .                  . . . other records . . .                    .
       .                                                               .
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-      |  Record Type == end_of_recs   |  Record Value Length == 00    |
+      |  Record Type = nrb_record_end |   Record Value Length = 0     |
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
       /                                                               /
       /                      Options (variable)                       /
@@ -1380,55 +1492,96 @@ Internet-Draft                   PCAPNG                      August 2015
    o  Block Total Length: total size of this block, as described in
       Section 3.1.
 
-   This is followed by a zero-terminated list of records (in the TLV
+   This is followed by zero or more Name Resolution Records (in the TLV
    format), each of which contains an association between a network
-   address and a name.  There are three possible types of records:
+   address and a name.  An nrb_record_end MUST be added after the last
+   Record, and MUST exist even if there are no other Records in the NRB.
+   There are currently three possible types of records:
 
-                  +------------------+------+----------+
-                  | Name             | Code | Length   |
-                  +------------------+------+----------+
-                  | nres_endofrecord | 0    | 0        |
-                  | nres_ip4record   | 1    | Variable |
-                  | nres_ip6record   | 2    | Variable |
-                  +------------------+------+----------+
+
+
+
+
+
+
+
+
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 27]
+
+Internet-Draft                   pcapng                   September 2015
+
+
+                  +-----------------+--------+----------+
+                  | Name            | Code   | Length   |
+                  +-----------------+--------+----------+
+                  | nrb_record_end  | 0x0000 | 0        |
+                  | nrb_record_ipv4 | 0x0001 | Variable |
+                  | nrb_record_ipv6 | 0x0002 | Variable |
+                  +-----------------+--------+----------+
 
                   Table 5: Name Resolution Block Records
 
+   nrb_record_end:
+           The nrb_record_end record delimits the end of name resolution
+           records.  This record is needed to determine when the list of
+           name resolution records has ended and some options (if any)
+           begin.
 
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 25]
-
-Internet-Draft                   PCAPNG                      August 2015
-
-
-   nres_endofrecord:
-           The nres_endofrecord record delimits the end of name
-           resolution records.  This record is needed to determine when
-           the list of name resolution records has ended and some
-           options (if any) begin.
-
-   nres_ip4record:
-           The nres_ip4record record specifies an IPv4 address
-           (contained in the first 4 bytes), followed by one or more
-           zero-terminated strings containing the DNS entries for that
-           address.
+   nrb_record_ipv4:
+           The nrb_record_ipv4 record specifies an IPv4 address
+           (contained in the first 4 octets), followed by one or more
+           zero-terminated UTF-8 strings containing the DNS entries for
+           that address.  The minimum valid Record Length for this
+           Record Type is thus 6: 4 for the IP octets, 1 character, and
+           a zero-value octet terminator.  Note that the IP address is
+           treated as four octets, one for each octet of the IP address;
+           it is not a 32-bit word, and thus the endianness of the SHB
+           does not affect this field's value.
 
            Example: '127 0 0 1'"localhost".
 
-   nres_ip6record:
-           The nres_ip4record record specifies an IPv6 address
-           (contained in the first 16 bytes), followed by one or more
+           [Open issue: is an empty string (i.e., just a zero-value
+           octet) valid?]
+
+   nrb_record_ipv6:
+           The nrb_record_ipv6 record specifies an IPv6 address
+           (contained in the first 16 octets), followed by one or more
            zero-terminated strings containing the DNS entries for that
-           address.
+           address.  The minimum valid Record Length for this Record
+           Type is thus 18: 16 for the IP octets, 1 character, and a
+           zero-value octet terminator.
 
            Example: '20 01 0d b8 00 00 00 00 00 00 00 00 12 34 56
            78'"somehost".
 
+           [Open issue: is an empty string (i.e., just a zero-value
+           octet) valid?]
+
+
+
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 28]
+
+Internet-Draft                   pcapng                   September 2015
+
+
+   Record Types other than those specified earlier MUST be ignored and
+   skipped past.  More Record Types will likely be defined in the
+   future, and MUST NOT break backwards compatibility.
+
    Each Record Value is aligned to and padded to a 32-bit boundary.  The
    corresponding Record Value Length reflects the actual length of the
-   Record Value; it does not include the lengths of the Record Type, the
-   Record Value Length, or anything after the Record Value.
+   Record Value; it does not include the lengths of the Record Type
+   field, the Record Value Length field, any padding for the Record
+   Value, or anything after the Record Value.  For Record Types with
+   name strings, the Record Length does include the zero-value octet
+   terminating that string.  A Record Length of 0 is valid, unless
+   indicated otherwise.
 
    After the list of Name Resolution Records, optionally, a list of
    options (formatted according to the rules defined in Section 3.5) can
@@ -1448,16 +1601,6 @@ Internet-Draft                   PCAPNG                      August 2015
                   Table 6: Name Resolution Block Options
 
    ns_dnsname:
-
-
-
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 26]
-
-Internet-Draft                   PCAPNG                      August 2015
-
-
            The ns_dnsname option is a UTF-8 string containing the name
            of the machine (DNS server) used to perform the name
            resolution.
@@ -1466,11 +1609,23 @@ Internet-Draft                   PCAPNG                      August 2015
 
    ns_dnsIP4addr:
            The ns_dnsIP4addr option specifies the IPv4 address of the
-           DNS server.
+           DNS server.  Note that the IP address is treated as four
+           octets, one for each octet of the IP address; it is not a
+           32-bit word, and thus the endianness of the SHB does not
+           affect this field's value.
 
            Example: '192 168 0 1'.
 
    ns_dnsIP6addr:
+
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 29]
+
+Internet-Draft                   pcapng                   September 2015
+
+
            The ns_dnsIP6addr option specifies the IPv6 address of the
            DNS server.
 
@@ -1478,41 +1633,15 @@ Internet-Draft                   PCAPNG                      August 2015
 
 4.6.  Interface Statistics Block
 
-   The Interface Statistics Block contains the capture statistics for a
-   given interface and it is optional.  The statistics are referred to
-   the interface defined in the current Section identified by the
-   Interface ID field.  An Interface Statistics Block is normally placed
-   at the end of the file, but no assumptions can be taken about its
-   position - it can even appear multiple times for the same interface.
+   The Interface Statistics Block (ISB) contains the capture statistics
+   for a given interface and it is optional.  The statistics are
+   referred to the interface defined in the current Section identified
+   by the Interface ID field.  An Interface Statistics Block is normally
+   placed at the end of the file, but no assumptions can be taken about
+   its position - it can even appear multiple times for the same
+   interface.
 
    The format of the Interface Statistics Block is shown in Figure 14.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 27]
-
-Internet-Draft                   PCAPNG                      August 2015
-
 
        0                   1                   2                   3
        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -1543,15 +1672,18 @@ Internet-Draft                   PCAPNG                      August 2015
    o  Block Total Length: total size of this block, as described in
       Section 3.1.
 
-   o  Interface ID: it specifies the interface these statistics refers
-      to; the correct interface will be the one whose Interface
-      Description Block (within the current Section of the file) is
-      identified by same number (see Section 4.2) of this field.  Please
-      note: in former versions of this document, this field was 16 bits
-      only.  As this differs from its usage in other places of this doc
-      and as this block was not used "in the wild" before (as to the
-      knowledge of the authors), it seems reasonable to change it to 32
-      bits!
+   o  Interface ID: specifies the interface these statistics refers to;
+      the correct interface will be the one whose Interface Description
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 30]
+
+Internet-Draft                   pcapng                   September 2015
+
+
+      Block (within the current Section of the file) is identified by
+      same number (see Section 4.2) of this field.
 
    o  Timestamp: time this statistics refers to.  The format of the
       timestamp is the same already defined in the Enhanced Packet Block
@@ -1562,16 +1694,8 @@ Internet-Draft                   PCAPNG                      August 2015
 
    All the statistic fields are defined as options in order to deal with
    systems that do not have a complete set of statistics.  Therefore, In
-
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 28]
-
-Internet-Draft                   PCAPNG                      August 2015
-
-
-   addiction to the options defined in Section 3.5, the following
-   options are valid within this block:
+   addition to the options defined in Section 3.5, the following options
+   are valid within this block:
 
                    +------------------+------+--------+
                    | Name             | Code | Length |
@@ -1589,8 +1713,8 @@ Internet-Draft                   PCAPNG                      August 2015
 
    isb_starttime:
            The isb_starttime option specifies the time the capture
-           started; time will be stored in two blocks of four bytes
-           each.  The format of the timestamp is the same already
+           started; time will be stored in two blocks of four octets
+           each.  The format of the timestamp is the same as the one
            defined in the Enhanced Packet Block (Section 4.3).
 
            Example: '97 c3 04 00 aa 47 ca 64' in Little Endian, decodes
@@ -1598,14 +1722,22 @@ Internet-Draft                   PCAPNG                      August 2015
 
    isb_endtime:
            The isb_endtime option specifies the time the capture ended;
-           time will be stored in two blocks of four bytes each.  The
-           format of the timestamp is the same already defined in the
+           time will be stored in two blocks of four octets each.  The
+           format of the timestamp is the same as the one defined in the
            Enhanced Packet Block (Section 4.3).
 
            Example: '96 c3 04 00 73 89 6a 65', in Little Endian, decodes
            to 06/29/2012 06:17:00 UTC.
 
    isb_ifrecv:
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 31]
+
+Internet-Draft                   pcapng                   September 2015
+
+
            The isb_ifrecv option specifies the 64-bit unsigned integer
            number of packets received from the physical interface
            starting from the beginning of the capture.
@@ -1618,13 +1750,6 @@ Internet-Draft                   PCAPNG                      August 2015
            resources starting from the beginning of the capture.
 
            Example: '0'.
-
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 29]
-
-Internet-Draft                   PCAPNG                      August 2015
-
 
    isb_filteraccept:
            The isb_filteraccept option specifies the 64-bit unsigned
@@ -1645,42 +1770,35 @@ Internet-Draft                   PCAPNG                      August 2015
            number of packets delivered to the user starting from the
            beginning of the capture.  The value contained in this field
            can be different from the value 'isb_filteraccept -
-           isb_osdrop' because some packets could still lay in the OS
+           isb_osdrop' because some packets could still be in the OS
            buffers when the capture ended.
 
            Example: '0'.
 
    All the fields that refer to packet counters are 64-bit values,
-   represented with the byte order of the current section.  Special care
-   must be taken in accessing these fields: since all the blocks are
-   aligned to a 32-bit boundary, such fields are not guaranteed to be
-   aligned on a 64-bit boundary.
+   represented with the octet order of the current section.  Special
+   care must be taken in accessing these fields: since all the blocks
+   are aligned to a 32-bit boundary, such fields are not guaranteed to
+   be aligned on a 64-bit boundary.
 
 4.7.  Custom Block
 
-   A Custom Block is the container for storing custom data that is not
-   part of another block; for storing custom data as part of another
-   block, see Section 3.6.  The Custom Block is optional, can be
+   A Custom Block (CB) is the container for storing custom data that is
+   not part of another block; for storing custom data as part of another
+   block, see Section 3.5.1.  The Custom Block is optional, can be
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 32]
+
+Internet-Draft                   pcapng                   September 2015
+
+
    repeated any number of times, and can appear before or after any
    other block except the first Section Header Block which must come
    first in the file.  Different Custom Blocks, of different type codes
    and/or different Private Enterprise Numbers, may be used in the same
    pcapng file.  The format of a Custom Block is shown in Figure 15.
-
-
-
-
-
-
-
-
-
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 30]
-
-Internet-Draft                   PCAPNG                      August 2015
-
 
       0                   1                   2                   3
       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -1721,22 +1839,23 @@ Internet-Draft                   PCAPNG                      August 2015
    o  Private Enterprise Number: An IANA-assigned Private Enterprise
       Number identifying the organization which defined the Custom
       Block.  See Section 6.1 for details.  The PEN number MUST be
-      encoded using the same endianess as the Section Header Block it is
-      within the scope of.
+      encoded using the same endianness as the Section Header Block it
+      is within the scope of.
+
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 33]
+
+Internet-Draft                   pcapng                   September 2015
+
 
    o  Custom Data: the custom data, padded to a 32 bit boundary.
 
    o  Options: optionally, a list of options (formatted according to the
       rules defined in Section 3.5) can be present.  Note that custom
-      options for the Custom Block still use the custom option format,
-      as described in Section 3.6.
-
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 31]
-
-Internet-Draft                   PCAPNG                      August 2015
-
+      options for the Custom Block still use the custom option format
+      and type code, as described in Section 3.5.1.
 
 5.  Experimental Blocks (deserve further investigation)
 
@@ -1763,7 +1882,7 @@ Internet-Draft                   PCAPNG                      August 2015
    |                                                               |
    |                       Compressed Data                         |
    |                                                               |
-   |  variable length, byte-aligned and padded to end on a 32-bit  |
+   |  variable length, octet-aligned and padded to end on a 32-bit |
    |                         boundary                              |
    |                                                               |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -1780,19 +1899,18 @@ Internet-Draft                   PCAPNG                      August 2015
    o  Block Total Length: total size of this block, as described in
       Section 3.1.
 
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 34]
+
+Internet-Draft                   pcapng                   September 2015
+
+
    o  Compression Type: specifies the compression algorithm.  Possible
       values for this field are 0 (uncompressed), 1 (Lempel Ziv), 2
       (Gzip), other?? Probably some kind of dumb and fast compression
       algorithm could be effective with some types of traffic (for
       example web), but which?
-
-
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 32]
-
-Internet-Draft                   PCAPNG                      August 2015
-
 
    o  Compressed Data: data of this block.  Once decompressed, it is
       made of other blocks.
@@ -1815,7 +1933,7 @@ Internet-Draft                   PCAPNG                      August 2015
    |                                                               |
    |                       Encrypted Data                          |
    |                                                               |
-   |                 variable length, byte-aligned                 |
+   |                 variable length, octet-aligned                |
    |                                                               |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |                      Block Total Length                       |
@@ -1836,19 +1954,16 @@ Internet-Draft                   PCAPNG                      August 2015
       probably contain other fields, depending on the encryption
       algorithm.  To be defined precisely.
 
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 35]
+
+Internet-Draft                   pcapng                   September 2015
+
+
    o  Encrypted Data: data of this block.  Once decrypted, it originates
       other blocks.
-
-
-
-
-
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 33]
-
-Internet-Draft                   PCAPNG                      August 2015
-
 
 5.4.  Fixed Length Block (experimental)
 
@@ -1873,7 +1988,7 @@ Internet-Draft                   PCAPNG                      August 2015
    |                                                               |
    |                        Fixed Size Data                        |
    |                                                               |
-   |                 variable length, byte-aligned                 |
+   |                 variable length, octet-aligned                |
    |                                                               |
    |                                                               |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -1898,12 +2013,9 @@ Internet-Draft                   PCAPNG                      August 2015
 
 
 
-
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 34]
+Tuexen, et al.            Expires March 6, 2016                [Page 36]
 
-Internet-Draft                   PCAPNG                      August 2015
+Internet-Draft                   pcapng                   September 2015
 
 
 5.5.  Directory Block (experimental)
@@ -1957,9 +2069,9 @@ Internet-Draft                   PCAPNG                      August 2015
 
 
 
-Tuexen, et al.          Expires February 26, 2016              [Page 35]
+Tuexen, et al.            Expires March 6, 2016                [Page 37]
 
-Internet-Draft                   PCAPNG                      August 2015
+Internet-Draft                   pcapng                   September 2015
 
 
 6.1.  Supported Use-Cases
@@ -2013,9 +2125,9 @@ Internet-Draft                   PCAPNG                      August 2015
 
 
 
-Tuexen, et al.          Expires February 26, 2016              [Page 36]
+Tuexen, et al.            Expires March 6, 2016                [Page 38]
 
-Internet-Draft                   PCAPNG                      August 2015
+Internet-Draft                   pcapng                   September 2015
 
 
 6.3.  Strings vs. Bytes
@@ -2025,19 +2137,16 @@ Internet-Draft                   PCAPNG                      August 2015
    separation is that a pcapng display appplication which does not
    understand the specific PEN's Custom Option can still display the
    data as a string if it's a string type code, rather than as hex-ascii
-   of the bytes.
+   of the octets.
 
-   [Open issue: should we allocate a string code for Custom Block as
-   well?]
-
-6.4.  Endianess Issues
+6.4.  Endianness Issues
 
    Implementers writing Custom Blocks or Custom Options should be aware
    that a pcapng file can be re-written by machines using a different
    endianness than the original file, which means all known fields of
    the pcapng file will change endianness in the new file.  Since the
    Custom Data payload of the Custom Block or Custom Option might be an
-   arbitrary sequence of unknown bytes to such machines, they cannot
+   arbitrary sequence of unknown octets to such machines, they cannot
    convert multi-byte values inside the Custom Data into the appropriate
    endianness.
 
@@ -2048,15 +2157,15 @@ Internet-Draft                   PCAPNG                      August 2015
    leave the Custom Data payload alone (as little-endian format).  If
    this file then gets sent back to the little-endian machine, then when
    that little-endian machine reads the file it will detect the format
-   is big- endian, and swap the endianess while it parses the file - but
-   that will cause the Custom Data payload to be incorrect since it was
-   already in little-endian format.
+   is big- endian, and swap the endianness while it parses the file -
+   but that will cause the Custom Data payload to be incorrect since it
+   was already in little-endian format.
 
    Therefore, the vendor should either encode all of their fields in a
    consistent manner, such as always in big-endian or always little-
    endian format, regardless of the host platform's endianness; or they
    should encode some flag in the Custom Data payload to indicate which
-   endianess the rest of the payload is written in.
+   endianness the rest of the payload is written in.
 
 7.  Recommended File Name Extension: .pcapng
 
@@ -2066,24 +2175,24 @@ Internet-Draft                   PCAPNG                      August 2015
    On Windows and OS X, files are distinguished by an extension to their
    filename.  Such an extension is technically not actually required, as
    applications should be able to automatically detect the pcapng file
-
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 37]
-
-Internet-Draft                   PCAPNG                      August 2015
-
-
    format through the "magic bytes" at the beginning of the file, as
    some other UN*X desktop environments do.  However, using name
    extensions makes it easier to work with files (e.g. visually
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 39]
+
+Internet-Draft                   pcapng                   September 2015
+
+
    distinguish file formats) so it is recommended - though not required
    - to use .pcapng as the name extension for files following this
    specification.
 
    Please note: To avoid confusion (like the current usage of .cap for a
    plethora of different capture file formats) other file name
-   extensions than .pcapng should be avoided!
+   extensions than .pcapng should be avoided.
 
 8.  Conclusions
 
@@ -2098,156 +2207,53 @@ Internet-Draft                   PCAPNG                      August 2015
    produced by the others.  Two or more files can be concatenated
    obtaining another valid file.
 
-9.  Security Considerations
+9.  Implementations
+
+   Some known implementations that read or write the pcapng file format
+   are listed on the pcapng GitHub wiki [5].
+
+10.  Security Considerations
 
    TBD.
 
-10.  IANA Considerations
+11.  IANA Considerations
 
    TBD.
 
-11.  Contributors
+   [Open issue: decide whether the block types, option types, NRB Record
+   types, etc. should be IANA registries.  And if so, what the IANA
+   policy for each should be (see RFC 5226)]
 
-   Loris Degioanni and Gianluca Varenni were coauthoring this document
-   before it was submitted to the IETF.
-
-12.  Acknowledgments
-
-   The authors wish to thank Anders Broman, Ulf Lamping, Richard Sharpe
-   and many others for their invaluable comments.
-
-13.  References
-
-
-
-
-
-
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 38]
-
-Internet-Draft                   PCAPNG                      August 2015
-
-
-13.1.  Normative References
-
-   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
-              Requirement Levels", BCP 14, RFC 2119, DOI 10.17487/
-              RFC2119, March 1997,
-              <http://www.rfc-editor.org/info/rfc2119>.
-
-13.2.  URIs
-
-   [1] http://www.tcpdump.org/linktypes.html
-
-   [2] http://www.tcpdump.org/linktypes.html
-
-   [3] http://www.tcpdump.org/linktypes.html
-
-   [4] http://pen.iana.o rg/pen/PenApplication.page
-
-   [5] http://www.tcpdump.org/linktypes.html
-
-Appendix A.  Packet Block Flags Word
-
-   The Packet Block Flags Word is a 32-bit value that contains link-
-   layer information about the packet.
-
-   The meaning of the bits is the following:
-
-   +--------+----------------------------------------------------------+
-   | Bit    | Description                                              |
-   | Number |                                                          |
-   +--------+----------------------------------------------------------+
-   | 0-1    | Inbound / Outbound packet (00 = information not          |
-   |        | available, 01 = inbound, 10 = outbound)                  |
-   | 2-4    | Reception type (000 = not specified, 001 = unicast, 010  |
-   |        | = multicast, 011 = broadcast, 100 = promiscuous).        |
-   | 5-8    | FCS length, in bytes (0000 if this information is not    |
-   |        | available).  This value overrides the if_fcslen option   |
-   |        | of the Interface Description Block, and is used with     |
-   |        | those link layers (e.g. PPP) where the length of the FCS |
-   |        | can change during time.                                  |
-   | 9-15   | Reserved (MUST be set to zero).                          |
-   | 16-31  | link-layer-dependent errors (Bit 31 = symbol error, Bit  |
-   |        | 30 = preamble error, Bit 29 = Start Frame Delimiter      |
-   |        | error, Bit 28 = unaligned frame error, Bit 27 = wrong    |
-   |        | Inter Frame Gap error, Bit 26 = packet too short error,  |
-   |        | Bit 25 = packet too long error, Bit 24 = CRC error,      |
-   |        | other?? are 16 bit enough?).                             |
-   +--------+----------------------------------------------------------+
-
-
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 39]
-
-Internet-Draft                   PCAPNG                      August 2015
-
-
-Appendix B.  Standardized Block Type Codes
+11.1.  Standardized Block Type Codes
 
    Every Block is uniquely identified by a 32-bit integer value, stored
    in the Block Header.
 
-   As pointed out in Section 3.1, Block Types codes whose Most
+   As pointed out in Section 3.1, Block Type codes whose Most
    Significant Bit (bit 31) is set to 1 are reserved for local use by
    the application.
 
+
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 40]
+
+Internet-Draft                   pcapng                   September 2015
+
+
    All the remaining Block Type codes (0x00000000 to 0x7FFFFFFF) are
-   standardized by this document.  A request should be sent to the
-   authors of this document to add a new Standard Block Type code to the
-   specification.
+   standardized by this document.  Requests for new Block Type codes
+   should be sent to the pcap- ng-format mailing list [6].
 
    The following is a list of the Standardized Block Type Codes:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 40]
-
-Internet-Draft                   PCAPNG                      August 2015
-
 
    +-----------------------+-------------------------------------------+
    | Block Type Code       | Description                               |
    +-----------------------+-------------------------------------------+
    | 0x00000000            | Reserved ???                              |
    | 0x00000001            | Interface Description Block (Section 4.2) |
-   | 0x00000002            | Packet Block (Appendix C)                 |
+   | 0x00000002            | Packet Block (Appendix A)                 |
    | 0x00000003            | Simple Packet Block (Section 4.4)         |
    | 0x00000004            | Name Resolution Block (Section 4.5)       |
    | 0x00000005            | Interface Statistics Block (Section 4.6)  |
@@ -2256,7 +2262,7 @@ Internet-Draft                   PCAPNG                      August 2015
    |                       | Gianluca Varenni                          |
    |                       | <gianluca.varenni@cacetech.com>, CACE     |
    |                       | Technologies LLC)                         |
-   | 0x00000008            | Arinc 429 in AFDX Encapsulation           |
+   | 0x00000008            | ARINC 429 [7] in AFDX Encapsulation       |
    |                       | Information Block (requested by Gianluca  |
    |                       | Varenni <gianluca.varenni@cacetech.com>,  |
    |                       | CACE Technologies LLC)                    |
@@ -2277,11 +2283,59 @@ Internet-Draft                   PCAPNG                      August 2015
    | 0x0D0D0A00-0x0D0D0AFF | Reserved. Used to detect trace files      |
    |                       | corrupted because of file transfers using |
    |                       | the FTP protocol in text mode.            |
+   | 0x80000000-0xFFFFFFFF | Reserved for local use.                   |
    +-----------------------+-------------------------------------------+
 
                   Table 8: Standardized Block Type Codes
 
-Appendix C.  Packet Block (obsolete!)
+   [Open issue: reserve 0x40000000-0x7FFFFFFF for do-not-copy-bit range
+   of base types?]
+
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 41]
+
+Internet-Draft                   pcapng                   September 2015
+
+
+12.  Contributors
+
+   Loris Degioanni and Gianluca Varenni were coauthoring this document
+   before it was submitted to the IETF.
+
+13.  Acknowledgments
+
+   The authors wish to thank Anders Broman, Ulf Lamping, Richard Sharpe
+   and many others for their invaluable comments.
+
+14.  References
+
+14.1.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119, DOI 10.17487/
+              RFC2119, March 1997,
+              <http://www.rfc-editor.org/info/rfc2119>.
+
+14.2.  URIs
+
+   [1] http://www.tcpdump.org/linktypes.html
+
+   [2] http://www.tcpdump.org/linktypes.html
+
+   [3] http://www.tcpdump.org/linktypes.html
+
+   [4] http://pen.iana.o rg/pen/PenApplication.page
+
+   [5] https://github.com/pcapng/pcapng/wiki/Implementations
+
+   [6] https://www.winpcap.org/mailman/listinfo/pcap-ng-format
+
+   [7] https://en.wikipedia.org/wiki/ARINC_429
+
+   [8] http://www.tcpdump.org/linktypes.html
+
+Appendix A.  Packet Block (obsolete!)
 
    The Packet Block is obsolete, and MUST NOT be used in new files.  Use
    the Enhanced Packet Block or Simple Packet Block instead.  This
@@ -2293,9 +2347,11 @@ Appendix C.  Packet Block (obsolete!)
 
 
 
-Tuexen, et al.          Expires February 26, 2016              [Page 41]
+
+
+Tuexen, et al.            Expires March 6, 2016                [Page 42]
 
-Internet-Draft                   PCAPNG                      August 2015
+Internet-Draft                   pcapng                   September 2015
 
 
        0                   1                   2                   3
@@ -2311,9 +2367,9 @@ Internet-Draft                   PCAPNG                      August 2015
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    16 |                        Timestamp (Low)                        |
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   20 |                         Captured Len                          |
+   20 |                    Captured Packet Length                     |
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   24 |                          Packet Len                           |
+   24 |                    Original Packet Length                     |
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    28 /                                                               /
       /                          Packet Data                          /
@@ -2349,35 +2405,38 @@ Internet-Draft                   PCAPNG                      August 2015
 
 
 
-Tuexen, et al.          Expires February 26, 2016              [Page 42]
+Tuexen, et al.            Expires March 6, 2016                [Page 43]
 
-Internet-Draft                   PCAPNG                      August 2015
+Internet-Draft                   pcapng                   September 2015
 
 
       hexadecimal) is reserved for those systems in which this
       information is not available.
 
    o  Timestamp (High) and Timestamp (Low): timestamp of the packet.
-      The format of the timestamp is the same already defined in the
-      Enhanced Packet Block (Section 4.3).
+      The format of the timestamp is the same as was already defined for
+      the Enhanced Packet Block (Section 4.3).
 
-   o  Captured Len: number of bytes captured from the packet (i.e. the
-      length of the Packet Data field).  It will be the minimum value
-      among the actual Packet Length and the snapshot length (SnapLen
-      defined in Figure 10).  The value of this field does not include
-      the padding bytes added at the end of the Packet Data field to
-      align the Packet Data Field to a 32-bit boundary.
+   o  Captured Packet Length: number of octets captured from the packet
+      (i.e. the length of the Packet Data field).  It will be the
+      minimum value among the Original Packet Length and the snapshot
+      length for the interface (SnapLen, defined in Figure 10).  The
+      value of this field does not include the padding octets added at
+      the end of the Packet Data field to align the Packet Data field to
+      a 32-bit boundary.
 
-   o  Packet Len: actual length of the packet when it was transmitted on
-      the network.  Can be different from Captured Len if the user wants
-      only a snapshot of the packet.
+   o  Original Packet Length: actual length of the packet when it was
+      transmitted on the network.  It can be different from Captured
+      Packet Length if the packet has been truncated by the capture
+      process.
 
    o  Packet Data: the data coming from the network, including link-
-      layer headers.  The actual length of this field is Captured Len.
-      The format of the link-layer headers depends on the LinkType field
-      specified in the Interface Description Block (see Section 4.2) and
-      it is specified in the entry for that format in the the
-      tcpdump.org link-layer header types registry [5].
+      layer headers.  The actual length of this field is Captured Packet
+      Length plus the padding to a 32-bit boundary.  The format of the
+      link-layer headers depends on the LinkType field specified in the
+      Interface Description Block (see Section 4.2) and it is specified
+      in the entry for that format in the the tcpdump.org link-layer
+      header types registry [8].
 
    o  Options: optionally, a list of options (formatted according to the
       rules defined in Section 3.5) can be present.
@@ -2400,16 +2459,14 @@ Internet-Draft                   PCAPNG                      August 2015
 
            Example: '0'.
 
-   pack_hash:
 
 
-
-
-Tuexen, et al.          Expires February 26, 2016              [Page 43]
+Tuexen, et al.            Expires March 6, 2016                [Page 44]
 
-Internet-Draft                   PCAPNG                      August 2015
+Internet-Draft                   pcapng                   September 2015
 
 
+   pack_hash:
            The pack_hash option is the same as the epb_hash of the
            enhanced packet block.
 
@@ -2460,5 +2517,4 @@ Authors' Addresses
 
 
 
-
-Tuexen, et al.          Expires February 26, 2016              [Page 44]
+Tuexen, et al.            Expires March 6, 2016                [Page 45]
